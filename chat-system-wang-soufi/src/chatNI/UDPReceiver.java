@@ -9,24 +9,30 @@ import java.net.DatagramSocket;
 import remoteApplication.Hello;
 import remoteApplication.Message;
 
-public class UDPReceiver {
+public class UDPReceiver extends Thread {
 
 	private DatagramSocket socket ;
 	private DatagramPacket packet ;
+	private ChatNI chatNI ;
 	
 	// constructeur
-	public UDPReceiver(DatagramSocket socket){
+	public UDPReceiver(DatagramSocket socket, ChatNI chatNI){
 		this.socket = socket ;
+		this.chatNI = chatNI ;
 	}
 	
-	public void receive() throws IOException, ClassNotFoundException{
+	public void run(){
 		byte[] buffer = new byte[10000];
 		packet = new DatagramPacket(buffer, buffer.length);
-		System.out.println("waiting for the packet....");
-		socket.receive(packet);
-		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buffer));
-		Message messageReceived = (Hello) in.readObject() ;
-		System.out.println("packet received");
-		System.out.println("The nickname is :" + messageReceived.getNickname());
+		try{
+			while(true){
+				socket.receive(packet);
+				ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buffer));
+				ThreadUDPReceiver newUDPReceiver = new ThreadUDPReceiver(in,chatNI);
+				newUDPReceiver.start();
+			}
+		}
+		catch(IOException e1){
+		}
 	}
 }

@@ -10,8 +10,8 @@ import javax.swing.JList;
 import javax.swing.JTextArea;
 
 import java.awt.SystemColor;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MainFrame extends JFrame {
 
@@ -25,17 +25,18 @@ public class MainFrame extends JFrame {
 	private JLabel lblOnlineUsers ;
 	private JButton btnConnect ;
 	private JButton btnDisconnect ;
+	private JButton btnSendFile;
 	private JButton btnSendMessage ;
 	private JList<String> onlineUserlist ;
 
 	public MainFrame() {
 		this.initComponents();
 		this.setVisible(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	public void initComponents(){
 		setTitle("Peer-to-Peer ChatSystem");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 619, 509);
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.control);
@@ -59,31 +60,12 @@ public class MainFrame extends JFrame {
 		btnDisconnect = new JButton("Disconnect");
 		btnDisconnect.setBounds(305, 39, 102, 23);
 		contentPane.add(btnDisconnect);
-		
 
 		onlineUserlist = new JList<String>();
 		onlineUserlist.setBounds(414, 85, 147, 300);
+		onlineUserlist.setToolTipText("Double click username to start private chat");
 		contentPane.add(onlineUserlist);
 		
-		/*
-		 * 
-		 * 
-		 */
-		
-		onlineUserlist.addMouseListener(new MouseAdapter() {
-		    public void mouseClicked(MouseEvent evt) {
-		        JList list = (JList)evt.getSource();
-		        if (evt.getClickCount() == 2) {
-		        	PairChatFrame chatFrame = new PairChatFrame();
-		        	chatFrame.setVisible(true);
-		        } 
-		    }
-		});
-		
-		/*
-		 * 
-		 * 
-		 */
 		lblOnlineUsers = new JLabel("Online Users");
 		lblOnlineUsers.setBounds(443, 61, 102, 14);
 		contentPane.add(lblOnlineUsers);
@@ -102,8 +84,18 @@ public class MainFrame extends JFrame {
 		contentPane.add(textAreaSendMessage);
 		
 		btnSendMessage = new JButton("Send Message");
+		btnSendMessage.setToolTipText("Send message to all online users");
 		btnSendMessage.setBounds(23, 396, 122, 23);
 		contentPane.add(btnSendMessage);
+		
+		btnSendFile = new JButton("Send a file to everyone");
+		btnSendFile.setToolTipText("Send a file to all online users");
+		btnSendFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnSendFile.setBounds(155, 396, 240, 23);
+		contentPane.add(btnSendFile);
 	}
 
 	public JButton getBtnConnect() {
@@ -134,4 +126,15 @@ public class MainFrame extends JFrame {
 		return btnSendMessage;
 	}
 
+	public JTextArea getTextAreaSendMessage() {
+		return textAreaSendMessage;
+	}
+
+	public JButton getBtnSendFile() {
+		return btnSendFile;
+	}
+
+	public void setBtnSendFile(JButton btnSendFile) {
+		this.btnSendFile = btnSendFile;
+	}
 }

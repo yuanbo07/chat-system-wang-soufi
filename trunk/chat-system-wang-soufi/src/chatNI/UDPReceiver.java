@@ -10,10 +10,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
-
-import chatsystemTDa2.Goodbye;
-import chatsystemTDa2.Hello;
-import chatsystemTDa2.HelloAck;
+import chatsystemTDa2.*;
 
 public class UDPReceiver extends Thread implements Observer {
 
@@ -75,11 +72,48 @@ public class UDPReceiver extends Thread implements Observer {
 		
 		if(receivedPacket instanceof Goodbye)
 		{
-			String remoteUserNickname = ((Goodbye)receivedPacket).getNickname();
 			InetAddress remoteUserIP = getReceivedPacket().getAddress();
-			chatNI.processGoodbye(remoteUserNickname, remoteUserIP);
+			try {
+				if(!LocalInetAddress.isOfLocalInterface(remoteUserIP.getHostAddress())){
+					String remoteUserNickname = ((Goodbye)receivedPacket).getNickname();
+					chatNI.processGoodbye(remoteUserNickname, remoteUserIP);
+				}
+			} catch (SocketException e) {
+				e.printStackTrace();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
 		}
 		
+		if(receivedPacket instanceof Send)
+		{
+			InetAddress remoteUserIP = getReceivedPacket().getAddress();
+			int receivedID = ((Send)receivedPacket).getID();
+			String receivedMessage = ((Send)receivedPacket).getMessage();
+			chatNI.processReceive(remoteUserIP, receivedID, receivedMessage);
+		}
+		
+		/*
+		if(receivedPacket instanceof SendAck)
+		{
+			InetAddress remoteUserIP = getReceivedPacket().getAddress();
+			int receivedID = ((SendAck)receivedPacket).getId_message();
+			chatNI.processSendAck(remoteUserIP, receivedID);
+		}
+		*/
+		
+		if(receivedPacket instanceof FileRequest){
+			InetAddress remoteUserIP = getReceivedPacket().getAddress();
+			String fileRequestName = ((FileRequest)receivedPacket).getName();
+			chatNI.processFileRequest(remoteUserIP,fileRequestName);
+		}
+		
+		if(receivedPacket instanceof FileResponse){
+			InetAddress remoteUserIP = getReceivedPacket().getAddress();
+			String fileResponseName = ((FileResponse)receivedPacket).getName();
+			boolean response = ((FileResponse)receivedPacket).getResponse() ;
+			chatNI.processFileResponse(response, remoteUserIP, fileResponseName);
+		}
 	}
 
 	public DatagramPacket getReceivedPacket() {

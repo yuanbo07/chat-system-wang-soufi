@@ -10,6 +10,7 @@ public class ChatModel extends Observable {
 	
 	private ArrayList<User> userlist = new ArrayList<User>();
 	private DefaultListModel<String> userlistModel = new DefaultListModel<String>();
+	private String localUsername ;
 	
 	public ChatModel(){
 	}
@@ -17,9 +18,16 @@ public class ChatModel extends Observable {
 	public void addUser(String remoteUserNickname, InetAddress remoteUserIP){
 		User newUser = new User(remoteUserNickname, remoteUserIP);
 		this.userlist.add(newUser);
-		userlistModel.addElement(newUser.getNickname());
+		userlistModel.addElement(newUser.getNickname()+"["+remoteUserIP.getHostAddress()+"]");
 		setChanged();
 		notifyObservers(newUser);
+		clearChanged();
+	}
+	
+	public void addLocalUser(String localUserNickname){
+		userlistModel.addElement(localUserNickname+"[Localhost]");
+		setChanged();
+		notifyObservers(localUserNickname);
 		clearChanged();
 	}
 	
@@ -29,6 +37,10 @@ public class ChatModel extends Observable {
 			if(userlist.get(i).getIp().equals(remoteUserIP))
 			{
 				this.userlist.remove(i);
+			}
+		}
+		for(i=0;i<userlistModel.size();i++){
+			if(userlistModel.getElementAt(i).equals(remoteUserNickname+"["+remoteUserIP.getHostAddress()+"]")){
 				userlistModel.remove(i);
 			}
 		}
@@ -66,5 +78,13 @@ public class ChatModel extends Observable {
 
 	public void setUserlistModel(DefaultListModel<String> userlistModel) {
 		this.userlistModel = userlistModel;
+	}
+
+	public String getLocalUsername() {
+		return localUsername;
+	}
+
+	public void setLocalUsername(String localUsername) {
+		this.localUsername = localUsername;
 	}
 }

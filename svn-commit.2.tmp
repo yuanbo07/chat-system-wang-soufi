@@ -1,0 +1,9 @@
+
+--This line, and those below, will be ignored--
+
+M    chat-system-wang-soufi/src/chatController/ChatController.java
+M    chat-system-wang-soufi/src/chatGUI/ChatGUI.java
+M    chat-system-wang-soufi/src/chatModel/ChatModel.java
+M    chat-system-wang-soufi/src/chatNI/ChatNI.java
+M    chat-system-wang-soufi/src/chatNI/UDPReceiver.java
+M    chat-system-wang-soufi/src/chatNI/UDPSender.java

@@ -12,37 +12,30 @@ import java.net.UnknownHostException;
 public class UDPSender extends Thread {
 	
 	private DatagramSocket socket ;
-	private String ip = "192.168.10.129" ; // loopback
-	InetAddress dest ;
 	private DatagramPacket packet ;
 	
-	// constructeur
 	public UDPSender(DatagramSocket socket){
 		this.socket = socket ;
 	}
 	
-	public void sendEnUnicast(Object o) throws UnknownHostException, IOException{
-		dest = InetAddress.getByName(ip);
-		// Serialize to a byte array
+	public void sendEnUnicast(Object messageToSend, InetAddress destIP) throws UnknownHostException, IOException{
 		ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-		ObjectOutput oo = new ObjectOutputStream(bStream); 
-		oo.writeObject(o);
-		oo.close();
+		ObjectOutput objectMessageToSend = new ObjectOutputStream(bStream); 
+		objectMessageToSend.writeObject(messageToSend);
+		objectMessageToSend.close();
 		byte[] Buf = bStream.toByteArray();
-		packet = new DatagramPacket(Buf,Buf.length,dest,5003);
+		packet = new DatagramPacket(Buf,Buf.length,destIP,16050);
 		socket.send(packet);
 	}
 	
-	public void sendEnBroadcast(Object o) throws IOException{
-		
-		
-		
+	public void sendEnBroadcast(Object messageToSend) throws IOException{
+		InetAddress destIP = InetAddress.getByName("192.168.10.255");
 		ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-		ObjectOutput oo = new ObjectOutputStream(bStream); 
-		oo.writeObject(o);
-		oo.close();
+		ObjectOutput objectMessageToSend = new ObjectOutputStream(bStream); 
+		objectMessageToSend.writeObject(messageToSend);
+		objectMessageToSend.close();
 		byte[] Buf = bStream.toByteArray();
-		packet = new DatagramPacket(Buf, Buf.length,InetAddress.getByName("192.168.10.255"),5003);
+		packet = new DatagramPacket(Buf, Buf.length,destIP,16050);
 		socket.send(packet);
 	}
 }

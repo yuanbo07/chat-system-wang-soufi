@@ -13,7 +13,6 @@ public class ChatSystem {
 		ChatModel model = new ChatModel();
 		ChatNI ni = new ChatNI();
 		ChatGUI gui =new ChatGUI(model);
-		gui.start();
 		
 		ChatController controller = new ChatController(model,ni,gui);
 		gui.setController(controller);

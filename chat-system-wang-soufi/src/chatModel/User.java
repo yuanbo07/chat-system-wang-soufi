@@ -27,7 +27,4 @@ public class User {
 	public void setIp(InetAddress ip) {
 		this.ip = ip;
 	}
-	
-	
-	
 }

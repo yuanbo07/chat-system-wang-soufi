@@ -3,7 +3,6 @@ package chatsystemTDa2;
 public class FileRequest extends Message {
 	
 	private static final long serialVersionUID = 4L;
-	
 	private String name;
 	
 	public FileRequest(String name){

@@ -18,12 +18,7 @@ public class Hello extends Message
 		this.nickname = nickname;
 	}
 
-	@Override
 	public String toString() {
 		return "Hello [nickname=" + nickname + "]";
 	}
-	
-	
-
-
 }

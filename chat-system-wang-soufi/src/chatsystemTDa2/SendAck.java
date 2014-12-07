@@ -2,9 +2,7 @@ package chatsystemTDa2;
 
 public class SendAck extends Message
 {
-   
 	private static final long serialVersionUID = 1L;
-	
 	private int id_message ;
 
 	public SendAck(int id_message){
@@ -20,7 +18,6 @@ public class SendAck extends Message
 		this.id_message = id_message;
 	}
 
-	@Override
 	public String toString() {
 		return "SendAck [id_message=" + id_message + "]";
 	}

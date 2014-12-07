@@ -4,8 +4,6 @@ package chatsystemTDa2;
 public class FileResponse extends Message {
 	private boolean response;
 	private String name;
-	
-
 	private static final long serialVersionUID = 5L;
 	
 	public FileResponse(boolean response,String name){
@@ -32,5 +30,4 @@ public class FileResponse extends Message {
 	public String toString(){
 		return "FileResponse[name="+name+", response="+response+"]";
 	}
-
 }

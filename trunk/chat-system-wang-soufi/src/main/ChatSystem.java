@@ -6,6 +6,12 @@ import chatGUI.ChatGUI;
 import chatModel.ChatModel;
 import chatNI.ChatNI;
 
+/**
+ * Class ChatSystem
+ * Main class of chat system using MVC design pattern
+ * @author Yuanbo Wang & Asma Soufi
+ * @version 1.0
+ */
 public class ChatSystem {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {

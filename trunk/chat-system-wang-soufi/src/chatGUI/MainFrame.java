@@ -4,19 +4,24 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JTextArea;
-
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Class MainFrame
+ * The main frame of chat system
+ * @author Yuanbo Wang & Asma Soufi
+ * @version 1.0
+ */
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	
 	private JPanel contentPane;
 	private JTextField textFieldNickname;
 	private JTextArea textAreaReceiveMessage ;
@@ -27,14 +32,22 @@ public class MainFrame extends JFrame {
 	private JButton btnDisconnect ;
 	private JButton btnSendFile;
 	private JButton btnSendMessage ;
-	private JList<String> onlineUserlist ;
+	@SuppressWarnings("rawtypes")
+	private JList onlineUserlist ;
 
+	/**
+	 * Constructor
+	 */
 	public MainFrame() {
 		this.initComponents();
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
+	/**
+	 * Initiate all components
+	 */
+	@SuppressWarnings("rawtypes")
 	public void initComponents(){
 		setTitle("Peer-to-Peer ChatSystem");
 		setBounds(100, 100, 619, 509);
@@ -61,27 +74,35 @@ public class MainFrame extends JFrame {
 		btnDisconnect.setBounds(305, 39, 102, 23);
 		contentPane.add(btnDisconnect);
 
-		onlineUserlist = new JList<String>();
-		onlineUserlist.setBounds(414, 85, 147, 300);
+		JScrollPane scrollPaneUserList = new JScrollPane();
+		scrollPaneUserList.setBounds(414, 82, 147, 303);
+		onlineUserlist = new JList();
 		onlineUserlist.setToolTipText("Double click username to start private chat");
-		contentPane.add(onlineUserlist);
+		
+		scrollPaneUserList.setViewportView(onlineUserlist);
+		contentPane.add(scrollPaneUserList);
 		
 		lblOnlineUsers = new JLabel("Online Users");
 		lblOnlineUsers.setBounds(443, 61, 102, 14);
 		contentPane.add(lblOnlineUsers);
 		
+		JScrollPane scrollPaneReceiveMessage = new JScrollPane();
+		scrollPaneReceiveMessage.setBounds(23, 81, 379, 215);
 		textAreaReceiveMessage = new JTextArea();
 		textAreaReceiveMessage.setEditable(false);
 		textAreaReceiveMessage.setLineWrap(true);
 		textAreaReceiveMessage.setWrapStyleWord(true);
-		textAreaReceiveMessage.setBounds(23, 81, 379, 215);
-		contentPane.add(textAreaReceiveMessage);
+		textAreaReceiveMessage.setLineWrap(true);
+		textAreaReceiveMessage.setWrapStyleWord(true);
+		contentPane.add(scrollPaneReceiveMessage);
+		scrollPaneReceiveMessage.setViewportView(textAreaReceiveMessage);
 		
+		JScrollPane scrollPaneSendMessage = new JScrollPane();
+		scrollPaneSendMessage.setBounds(23, 307, 379, 78);
 		textAreaSendMessage = new JTextArea();
-		textAreaSendMessage.setBounds(23, 307, 372, 78);
-		textAreaSendMessage.setLineWrap(true);
 		textAreaSendMessage.setWrapStyleWord(true);
-		contentPane.add(textAreaSendMessage);
+		scrollPaneSendMessage.setViewportView(textAreaSendMessage);
+		contentPane.add(scrollPaneSendMessage);
 		
 		btnSendMessage = new JButton("Send Message");
 		btnSendMessage.setToolTipText("Send message to all online users");
@@ -114,11 +135,13 @@ public class MainFrame extends JFrame {
 		return btnDisconnect;
 	}
 
-	public JList<String> getOnlineUserlist() {
+	@SuppressWarnings("rawtypes")
+	public JList getOnlineUserlist() {
 		return onlineUserlist;
 	}
 
-	public void setOnlineUserlist(JList<String> onlineUserlist) {
+	@SuppressWarnings("rawtypes")
+	public void setOnlineUserlist(JList onlineUserlist) {
 		this.onlineUserlist = onlineUserlist;
 	}
 

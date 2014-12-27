@@ -7,10 +7,18 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+import user.RemoteApplication;
 import chatController.ChatController;
 import chatsystemTDa2.* ;
 
-public class ChatNI extends Thread {
+/**
+ * Class ChatNI
+ * @author Yuanbo Wang & Asma Soufi
+ * @version 1.0
+ */
+public class ChatNI extends Thread implements Observer, RemoteApplication {
 	
 	private DatagramSocket UDPReceiverSocket ;
 	private ChatController controller ;
@@ -19,13 +27,17 @@ public class ChatNI extends Thread {
 	private boolean socketInitialized ;
 	private int sendId ;
 	private ArrayList<File> pendingFilesToSend = new ArrayList<File>();
+	private FileReceiver newFileReceiver ;
 	
 	public ChatNI() throws SocketException{
 	}
 	
+	/**
+	 * Initiate UDP receiving socket
+	 */
 	public void initSocket(){
 		try {
-			UDPReceiverSocket = new DatagramSocket(16050);
+			UDPReceiverSocket = new DatagramSocket(Network.udpReceiverPort);
 			udpReceiver = new UDPReceiver(UDPReceiverSocket, this);
 			udpReceiver.start();
 		} catch (SocketException e) {
@@ -34,17 +46,23 @@ public class ChatNI extends Thread {
 		socketInitialized = true ;
 	}
 	
+	/**
+	 * Close a UDP receiving socket
+	 */
 	public void closeSocket(){
 		UDPReceiverSocket.close();
 		socketInitialized = false ;
 	}
 	
+	/**
+	 * Send a Hello message in broadcast mode
+	 */
 	public void sendHello(String localNickname){
 		this.localNickname = localNickname ;
 		Message hello = new Hello(localNickname);	
 		DatagramSocket senderSocket;
 		try {
-			senderSocket = new DatagramSocket(5002);
+			senderSocket = new DatagramSocket(Network.udpSenderPort);
 			UDPSender sender = new UDPSender(senderSocket);
 			sender.start();
 			sender.sendEnBroadcast(hello);
@@ -57,11 +75,14 @@ public class ChatNI extends Thread {
 		}
 	}
 	
+	/**
+	 * Send a HelloAck message
+	 */
 	public void sendHelloAck(InetAddress remoteIP){
 		Message helloAck = new HelloAck(localNickname);
 		DatagramSocket senderSocket;
 		try {
-			senderSocket = new DatagramSocket(5002);
+			senderSocket = new DatagramSocket(Network.udpSenderPort);
 			UDPSender sender = new UDPSender(senderSocket);
 			sender.start();
 			sender.sendEnUnicast(helloAck, remoteIP);
@@ -73,6 +94,9 @@ public class ChatNI extends Thread {
 		}
 	}
 	
+	/**
+	 * Send a Goodbye message
+	 */
 	public void sendGoodbye(String remoteNickname){
 		Message goodbye = new Goodbye(remoteNickname);
 		DatagramSocket senderSocket;
@@ -94,11 +118,14 @@ public class ChatNI extends Thread {
 		}
 	}
 	
+	/**
+	 * Send a message in unicast mode (used in private chat)
+	 */
 	public void sendMessage(String sendMessage, InetAddress ip){
 		Send send = new Send(sendMessage, sendId);
 		DatagramSocket senderSocket;
 		try {
-			senderSocket = new DatagramSocket(5002);
+			senderSocket = new DatagramSocket(Network.udpSenderPort);
 			UDPSender sender = new UDPSender(senderSocket);
 			sender.start();
 			sender.sendEnUnicast(send, ip);
@@ -111,13 +138,16 @@ public class ChatNI extends Thread {
 		}
 	}
 	
+	/**
+	 * Send a message to everyone
+	 */
 	public void sendMessage(String sendMessage){
 
 		Send send = new Send(sendMessage, sendId);
 		DatagramSocket senderSocket;
 		int i;
 		try {
-			senderSocket = new DatagramSocket(5002);
+			senderSocket = new DatagramSocket(Network.udpSenderPort);
 			UDPSender sender = new UDPSender(senderSocket);
 			sender.start();
 			
@@ -135,12 +165,15 @@ public class ChatNI extends Thread {
 	}
 	
 
+	/**
+	 * Send a FileRequest message to everyone who is connected
+	 */
 	public void sendFileRequest(String fileName) {
 		FileRequest fileRequest = new FileRequest(fileName);
 		DatagramSocket senderSocket;
 		int i;
 		try {
-			senderSocket = new DatagramSocket(5002);
+			senderSocket = new DatagramSocket(Network.udpSenderPort);
 			UDPSender sender = new UDPSender(senderSocket);
 			sender.start();
 			
@@ -156,11 +189,33 @@ public class ChatNI extends Thread {
 		}
 	}
 
+	/**
+	 * Send a FileRequest message in unicast mode
+	 */
+	public void sendFileRequestUnicast(InetAddress remoteUserIP, String fileName) {
+		FileRequest fileRequest = new FileRequest(fileName);
+		DatagramSocket senderSocket;
+		try {
+			senderSocket = new DatagramSocket(Network.udpSenderPort);
+			UDPSender sender = new UDPSender(senderSocket);
+			sender.start();
+			sender.sendEnUnicast(fileRequest, remoteUserIP);
+			senderSocket.close();
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Send a FileResponse message
+	 */
 	public void sendFileResponse(boolean response, InetAddress remoteUserIP, String fileRequestName) {
 		FileResponse fileResponse = new FileResponse(response, fileRequestName);
 		DatagramSocket senderSocket;
 		try {
-			senderSocket = new DatagramSocket(5002);
+			senderSocket = new DatagramSocket(Network.udpSenderPort);
 			UDPSender sender = new UDPSender(senderSocket);
 			sender.start();
 			sender.sendEnUnicast(fileResponse, remoteUserIP);
@@ -172,38 +227,9 @@ public class ChatNI extends Thread {
 		}
 	}
 	
-	public void processHello(String remoteUserNickname, InetAddress remoteUserIP){
-		controller.processHello(remoteUserNickname, remoteUserIP);
-	}
-	
-	public void processHelloAck(String remoteUserNickname, InetAddress remoteUserIP) throws UnknownHostException, SocketException{
-		controller.processHelloAck(remoteUserNickname, remoteUserIP);
-	}
-	
-	public void processReceive(InetAddress remoteUserIP, int receivedID, String receivedMessage){
-		controller.processReceive(remoteUserIP, receivedID, receivedMessage);
-	}
-	
-	public void processGoodbye(String remoteUserNickname, InetAddress remoteUserIP) throws SocketException, UnknownHostException{
-		controller.processGoodbye(remoteUserNickname, remoteUserIP);
-	}
-
-	public void setController(ChatController controller) {
-		this.controller = controller;
-	}
-
-	public boolean isSocketInitialized() {
-		return socketInitialized;
-	}
-
-	public void processFileRequest(InetAddress remoteUserIP, String fileRequestName) {
-		controller.processFileRequest(remoteUserIP, fileRequestName);
-	}
-
-	public void processFileResponse(boolean response, InetAddress remoteUserIP,String fileResponseName) {
-		controller.processFileResponse(response, remoteUserIP, fileResponseName);
-	}
-
+	/**
+	 * Send a file
+	 */
 	public void sendFile(String fileResponseName, InetAddress remoteUserIP) {
 		int i;
 		for(i=0;i<pendingFilesToSend.size();i++){
@@ -215,13 +241,70 @@ public class ChatNI extends Thread {
 			}
 		}
 	}
+	
+	/**
+	 * Initiate a file receiving socket
+	 */
+	public void initFileReceiveSocket(String fileRequestName) {
+		newFileReceiver = new FileReceiver(fileRequestName);
+		newFileReceiver.addObserver(this);
+		newFileReceiver.run();
+	}
+	
+	public void receiveHello(String remoteUserNickname, InetAddress remoteUserIP){
+		controller.processHello(remoteUserNickname, remoteUserIP);
+	}
+	
+	public void receiveHelloAck(String remoteUserNickname, InetAddress remoteUserIP){
+		try {
+			controller.processHelloAck(remoteUserNickname, remoteUserIP);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void receiveMessage(InetAddress remoteUserIP, int receivedID, String receivedMessage){
+		controller.processReceive(remoteUserIP, receivedID, receivedMessage);
+	}
+	
+	public void receiveGoodbye(String remoteUserNickname, InetAddress remoteUserIP){
+		try {
+			controller.processGoodbye(remoteUserNickname, remoteUserIP);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void receiveSendAck(InetAddress remoteUserIP, int receivedID) {
+		controller.processSendAck(remoteUserIP, receivedID);
+	}
+	
+	public void receiveFileRequest(InetAddress remoteUserIP, String fileRequestName) {
+		controller.processFileRequest(remoteUserIP, fileRequestName);
+	}
+
+	public void receiveFileResponse(boolean response, InetAddress remoteUserIP,String fileResponseName) {
+		controller.processFileResponse(response, remoteUserIP, fileResponseName);
+	}
+
+	public void setController(ChatController controller) {
+		this.controller = controller;
+	}
+
+	public boolean isSocketInitialized() {
+		return socketInitialized;
+	}
 
 	public ArrayList<File> getPendingFilesToSend() {
 		return pendingFilesToSend;
 	}
 
-	public void initFileReceiveSocket() {
-		FileReceiver newFileReceiver = new FileReceiver(null);
-		newFileReceiver.start();
+	public void update(Observable observable, Object object) {
+		controller.processReceivedNewFile((String)object);
 	}
+
 }

@@ -5,6 +5,12 @@ import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+ * Class ThreadPrivateChat
+ * The thread of a private chat used to avoid any interrupt of main thread of ChatGUI as well as other private chats
+ * @author Yuanbo Wang & Asma Soufi
+ * @version 1.0
+ */
 public class ThreadPrivateChat extends Thread implements ActionListener{
 	
 	private PrivateChatFrame privateChatFrame ;
@@ -29,7 +35,7 @@ public class ThreadPrivateChat extends Thread implements ActionListener{
 		if(e.getSource()== privateChatFrame.getBtnSendPrivateMessage()){
 			String message = privateChatFrame.getTextAreaSendPrivateMessage().getText();
 			try {
-				chatGUI.SendMessageUnicast(message,InetAddress.getByName(ip));
+				chatGUI.sendMessageUnicast(message,InetAddress.getByName(ip));
 			} catch (UnknownHostException e1) {
 				e1.printStackTrace();
 			}
@@ -37,6 +43,8 @@ public class ThreadPrivateChat extends Thread implements ActionListener{
 			privateChatFrame.getTextAreaSendPrivateMessage().setText(null);
 		}
 		if(e.getSource()== privateChatFrame.getBtnSendFile()){
+			ThreadFileChooser fileChooser = new ThreadFileChooser(chatGUI,false,ip);
+			fileChooser.start();
 		}
 	}
 

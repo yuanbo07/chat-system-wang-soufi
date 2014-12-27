@@ -3,18 +3,28 @@ package chatModel;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Observable;
-
 import javax.swing.DefaultListModel;
 
+/**
+ * Class ChatModel
+ * The "Model" in the design pattern "MVC"
+ * @author Yuanbo Wang & Asma Soufi
+ * @version 1.0
+ */
 public class ChatModel extends Observable {
 	
 	private ArrayList<User> userlist = new ArrayList<User>();
-	private DefaultListModel<String> userlistModel = new DefaultListModel<String>();
+	@SuppressWarnings("rawtypes")
+	private DefaultListModel userlistModel = new DefaultListModel();
 	private String localUsername ;
 	
 	public ChatModel(){
 	}
 	
+	/**
+	 * Add a user to userlist and notify observer
+	 */
+	@SuppressWarnings("unchecked")
 	public void addUser(String remoteUserNickname, InetAddress remoteUserIP){
 		User newUser = new User(remoteUserNickname, remoteUserIP);
 		this.userlist.add(newUser);
@@ -24,6 +34,10 @@ public class ChatModel extends Observable {
 		clearChanged();
 	}
 	
+	/**
+	 * Add local user to the user list
+	 */
+	@SuppressWarnings("unchecked")
 	public void addLocalUser(String localUserNickname){
 		userlistModel.addElement(localUserNickname+"[Localhost]");
 		setChanged();
@@ -31,6 +45,9 @@ public class ChatModel extends Observable {
 		clearChanged();
 	}
 	
+	/**
+	 * Remove user from user list and notify observer
+	 */
 	public void removeUser(String remoteUserNickname, InetAddress remoteUserIP){
 		int i ;
 		for(i=0;i<userlist.size();i++){
@@ -49,6 +66,9 @@ public class ChatModel extends Observable {
 		clearChanged();
 	}
 	
+	/**
+	 * Determine if a user is in the user list
+	 */
 	public boolean isInOnlineList(InetAddress remoteUserIP){
 		int i ;
 		boolean result = false ;
@@ -72,11 +92,13 @@ public class ChatModel extends Observable {
 		clearChanged();
 	}
 
-	public DefaultListModel<String> getUserlistModel() {
+	@SuppressWarnings("rawtypes")
+	public DefaultListModel getUserlistModel() {
 		return userlistModel;
 	}
 
-	public void setUserlistModel(DefaultListModel<String> userlistModel) {
+	@SuppressWarnings("rawtypes")
+	public void setUserlistModel(DefaultListModel userlistModel) {
 		this.userlistModel = userlistModel;
 	}
 

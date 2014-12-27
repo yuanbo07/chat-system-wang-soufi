@@ -5,15 +5,18 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
-
 import java.awt.Font;
 
+/**
+ * Class PrivateChatFrame
+ * The frame in private chat mode
+ * @author Yuanbo Wang & Asma Soufi
+ * @version 1.0
+ */
 public class PrivateChatFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -25,6 +28,9 @@ public class PrivateChatFrame extends JFrame {
 	private String username ;
 	private String ip ;
 	
+	/**
+	 * Constructor
+	 */
 	public PrivateChatFrame(String username, String ip) {
 		this.username = username;
 		this.ip = ip ;
@@ -33,6 +39,9 @@ public class PrivateChatFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
+	/**
+	 * Initiate all components
+	 */
 	public void initComponent(){
 		setTitle("PrivateChat");
 		

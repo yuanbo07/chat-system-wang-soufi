@@ -2,6 +2,12 @@ package chatModel;
 
 import java.net.InetAddress;
 
+/**
+ * Class User
+ * The class defining a user in the chat system by his nickname and IP address
+ * @author Yuanbo Wang & Asma Soufi
+ * @version 1.0
+ */
 public class User {
 	
 	private String nickname ;
